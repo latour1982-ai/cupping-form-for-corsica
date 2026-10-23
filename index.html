@@ -128,6 +128,14 @@ td.tot{font-weight:800;font-size:16px}
 #copybox{display:none;margin-top:10px;min-height:160px;font-size:12px}
 .banner{border-color:var(--bean);background:var(--bean-soft);margin-bottom:12px}
 [hidden]{display:none!important}
+details.beans summary{display:flex;align-items:center;gap:10px;border:1px solid var(--bean);background:var(--bean-soft);border-radius:10px;padding:10px 12px}
+details.beans summary::after{content:none}
+details.beans summary::-webkit-details-marker{display:none}
+.bs-t{font-weight:700;color:var(--bean);flex:0 0 auto}
+.bs-s{font-size:12px;color:var(--sub);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bs-a{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--bean)}
+.bs-a::after{content:"開く ▼"}
+details.beans[open] .bs-a::after{content:"閉じる ▲"}
 #pasteBox{min-height:110px}
 
 /* total bar */
@@ -328,8 +336,8 @@ function renderForm(){
   $('form').innerHTML=`
   <section class="panel">
     <div><label class="f">サンプルコード</label><input data-t="code" value="${esc(s.code)}"></div>
-    <details class="ms" style="margin-top:12px" ${hasInfo?'open':''}>
-      <summary>豆の情報</summary>
+    <details class="ms beans" style="margin-top:12px" ${hasInfo?'open':''}>
+      <summary><span class="bs-t">豆の情報</span><span class="bs-s">${hasInfo?esc(shortInfo(s)):'産地・品種・精製など（販売ページの文章から読み取れます）'}</span><span class="bs-a"></span></summary>
       <label class="f" for="pasteBox" style="margin-top:10px">販売ページなどの文章を貼り付けると、項目を読み取って下に入力します</label>
       <textarea id="pasteBox" placeholder="例：\n生産国：エチオピア\n地域：グジ\n品種：ヘアルーム\n精製方法：ナチュラル\n標高：2,100m"></textarea>
       <div class="actions" style="align-items:center"><button class="btn" type="button" id="parseBtn">文章から読み取る</button><span class="hint" id="parseMsg"></span></div>
