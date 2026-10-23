@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>COE式カッピングシート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1f2ed; --paper:#ffffff; --ink:#1f2420; --sub:#66705f; --line:#d9ddd2;
+  --cherry:#9b1c31; --cherry-soft:#f6e3e6; --bean:#5f7a55; --bean-soft:#e6eddf;
+  --amber:#b8741a; --track:#e3e6dc;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141714; --paper:#1d211d; --ink:#e9ece4; --sub:#9aa38f; --line:#30362f;
+    --cherry:#e0566b; --cherry-soft:#3a1d23; --bean:#9cbc8f; --bean-soft:#24301f;
+    --amber:#e3a44b; --track:#2c322b; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141714; --paper:#1d211d; --ink:#e9ece4; --sub:#9aa38f; --line:#30362f;
+  --cherry:#e0566b; --cherry-soft:#3a1d23; --bean:#9cbc8f; --bean-soft:#24301f;
+  --amber:#e3a44b; --track:#2c322b; color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 130px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.num{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:56px;resize:vertical}
+
+/* Timer header */
+.timer{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px 12px}
+.timer-row{display:flex;align-items:center;gap:12px;max-width:760px;margin:0 auto}
+.clock{font-size:44px;font-weight:800;line-height:1;letter-spacing:.01em;min-width:3.6em}
+.clock.over{color:var(--amber)}
+.tbtns{display:flex;gap:8px;margin-left:auto}
+.tbtn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 14px;font-weight:700}
+.tbtn.go{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.phase{max-width:760px;margin:8px auto 0;font-size:13px;color:var(--sub);display:flex;justify-content:space-between;gap:8px}
+.phase b{color:var(--ink);font-weight:700}
+.bar{max-width:760px;margin:6px auto 0;height:6px;background:var(--track);border-radius:3px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--cherry);width:0}
+.bar .tick{position:absolute;top:0;bottom:0;width:2px;background:var(--paper)}
+
+main{max-width:760px;margin:0 auto;padding:16px 16px 120px}
+h2{font-size:17px;margin:28px 0 10px;font-weight:700}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label.f{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
+.hint{font-size:12px;color:var(--sub)}
+
+/* milestones */
+details.ms summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+details.ms summary::after{content:"＋";color:var(--sub)}
+details.ms[open] summary::after{content:"－"}
+.ms ol{list-style:none;margin:10px 0 0;padding:0}
+.ms li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.ms li .t{font-weight:700}
+.ms li.done{color:var(--sub)}
+.ms li.now .t,.ms li.now .l{color:var(--cherry)}
+.ms .l{font-weight:700}
+.ms .d{font-size:13px;color:var(--sub)}
+
+/* sample tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 12px;text-align:left;line-height:1.3}
+.tab small{display:block;font-size:12px;color:var(--sub)}
+.tab.on{border-color:var(--cherry);box-shadow:inset 0 0 0 1px var(--cherry)}
+.tab.add{color:var(--bean);font-weight:700;border-style:dashed}
+
+/* segmented */
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;border:0;background:transparent;padding:7px 0;font-size:14px;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button.on{background:var(--bean-soft);color:var(--bean);font-weight:700}
+
+/* attribute rows */
+.attr{padding:14px 0;border-top:1px solid var(--line)}
+.attr:first-of-type{border-top:0;padding-top:4px}
+.attr-head{display:flex;align-items:baseline;gap:8px}
+.attr-name{font-weight:700;font-size:16px}
+.attr-en{font-size:12px;color:var(--sub)}
+.attr-val{margin-left:auto;font-size:28px;font-weight:800;min-width:2.4em;text-align:right}
+.attr-ctl{display:flex;align-items:center;gap:10px;margin:6px 0}
+.step{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;line-height:1}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;border:0;padding:0;height:38px}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--track)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:var(--cherry);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--cherry)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--track)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--cherry);border:3px solid var(--paper)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);padding:0 48px}
+.intensity{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--sub)}
+.intensity .seg{flex:0 0 150px}
+.note{margin-top:8px}
+
+/* defects */
+.defcalc{margin-top:10px;font-size:14px}
+.defcalc .num{font-size:22px;color:var(--cherry);font-weight:800}
+
+/* summary */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{color:var(--sub);font-weight:500}
+td.code{text-align:left;font-weight:700}
+td.tot{font-weight:800;font-size:16px}
+.rank1 td.tot{color:var(--cherry)}
+
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 14px;font-weight:700}
+.btn.danger{color:var(--cherry)}
+.btn.arm{background:var(--cherry);color:#fff;border-color:var(--cherry)}
+#copybox{display:none;margin-top:10px;min-height:160px;font-size:12px}
+.banner{border-color:var(--bean);background:var(--bean-soft);margin-bottom:12px}
+[hidden]{display:none!important}
+#pasteBox{min-height:110px}
+
+/* total bar */
+.totalbar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--paper);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.totalbar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.tb-code{font-weight:700}
+.tb-sub{font-size:12px;color:var(--sub)}
+.tb-score{margin-left:auto;text-align:right;line-height:1}
+.tb-score .num{font-size:40px;font-weight:800}
+.tb-tier{font-size:12px;font-weight:700;margin-top:4px}
+.tier-pa{color:var(--cherry)} .tier-coe{color:var(--bean)} .tier-na{color:var(--sub)}
+@media (max-width:480px){
+  .clock{font-size:38px}
+  .grid3{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .tbtn{padding:8px 11px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="timer" aria-label="カッピングタイマー">
+  <div class="timer-row">
+    <div class="clock num" id="clock">00:00</div>
+    <div class="tbtns">
+      <button class="tbtn go" id="tStart">注湯スタート</button>
+      <button class="tbtn" id="tReset">リセット</button>
+    </div>
+  </div>
+  <div class="bar" id="bar"><i id="barFill"></i></div>
+  <div class="phase"><span id="phaseNow">注湯前：ドライアロマを評価</span><span id="phaseNext"></span></div>
+</header>
+
+<main>
+  <section class="panel banner" id="sharedBanner" hidden>
+    <div style="font-weight:700">共有された結果を表示しています</div>
+    <div class="hint">それまでのあなたのデータは控えてあります。</div>
+    <div class="actions"><button class="btn" id="restoreBtn">元のデータに戻す</button><button class="btn" id="keepBtn">このデータで続ける</button></div>
+  </section>
+  <section class="panel">
+    <div class="grid2">
+      <div><label class="f" for="sName">セッション名</label><input id="sName" data-s="name" placeholder="例：エチオピア ナチュラル比較"></div>
+      <div><label class="f" for="sDate">日付</label><input id="sDate" type="date" data-s="date"></div>
+      <div><label class="f" for="sCupper">カッパー</label><input id="sCupper" data-s="cupper"></div>
+      <div><label class="f" for="sCups">1サンプルあたりのカップ数</label>
+        <select id="sCups" data-s="cups"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    </div>
+    <details class="ms" style="margin-top:14px">
+      <summary>タイムライン（40分）</summary>
+      <ol id="msList"></ol>
+      <div class="actions"><button class="btn" id="soundBtn"></button></div>
+    </details>
+  </section>
+
+  <h2>サンプル</h2>
+  <div class="tabs" id="tabs" role="tablist"></div>
+
+  <div id="form"></div>
+
+  <h2>一覧とランキング</h2>
+  <section class="panel">
+    <div class="tablewrap"><table id="sumTable"></table></div>
+    <div class="actions">
+      <button class="btn" id="shareBtn">共有リンクを作成</button>
+      <button class="btn" id="copyBtn">結果をテキストでコピー</button>
+      <button class="btn" id="csvBtn">CSVで保存</button>
+      <button class="btn danger" id="resetAll">全データを消去</button>
+    </div>
+    <textarea id="copybox" readonly></textarea>
+    <p class="hint" style="margin-top:12px">合計＝8項目（各0〜8点）＋36点 − 欠点。全項目6.0で84点、6.5で88点、7.0で92点が目安です。入力内容はこの端末のブラウザに自動保存されます。共有リンクには採点結果がすべて含まれ、開いた人はログインなしで閲覧できます（GitHub Pagesなどで公開した版で使えます）。</p>
+  </section>
+</main>
+
+<div class="totalbar">
+  <div class="totalbar-in">
+    <div><div class="tb-code" id="tbCode">#1</div><div class="tb-sub" id="tbSub"></div></div>
+    <div class="tb-score"><span class="num" id="tbScore">84.0</span><div class="tb-tier" id="tbTier"></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+const ATTRS=[
+  {k:'clean',ja:'クリーンカップ',en:'Clean Cup',h:'欠点や濁りのない透明感。産地の個性がはっきり見えるか'},
+  {k:'sweet',ja:'スイートネス',en:'Sweetness',h:'甘さの質と豊かさ。熟度の高さを反映'},
+  {k:'acid',ja:'アシディティ',en:'Acidity',h:'酸の質（明るさ・複雑さ）を評価。強さは下で別記',int:'acidI'},
+  {k:'mouth',ja:'マウスフィール',en:'Mouthfeel',h:'質感の質（滑らかさ・密度）を評価。重さは下で別記',int:'mouthI'},
+  {k:'flavor',ja:'フレーバー',en:'Flavor',h:'味と鼻腔へ抜ける香りの複合的な印象'},
+  {k:'after',ja:'アフターテイスト',en:'Aftertaste',h:'余韻の長さと、甘さ・心地よさが続くか'},
+  {k:'balance',ja:'バランス',en:'Balance',h:'各要素の調和。突出・欠落がないか'},
+  {k:'overall',ja:'オーバーオール',en:'Overall',h:'総合的な評価。カッパー自身の判断'}
+];
+const MS=[
+  {t:0,l:'注湯・ステイープ開始',d:'93℃前後の湯を注ぐ。注湯前にドライアロマを評価しておく'},
+  {t:180,l:'クラストのアロマ',d:'ブレイク前にクラストの香りを確認'},
+  {t:240,l:'ブレイク',d:'スプーンで3回かき混ぜ、ブレイクアロマを評価'},
+  {t:480,l:'スキミング完了',d:'表面の泡と粉を取り除く'},
+  {t:600,l:'テイスティング開始（高温）',d:'約70℃。フレーバー、アフターテイスト、マウスフィール'},
+  {t:1200,l:'中温での確認',d:'約55〜60℃。酸の質、甘さ、バランスが見えやすい'},
+  {t:1800,l:'低温での確認',d:'約40℃前後。クリーンカップと甘さの持続を確認'},
+  {t:2400,l:'最終評価・スコア確定',d:'40分。全項目を見直して確定'}
+];
+const KEY='coe-cupping-v1';
+const INFO=[
+  {k:'country',ja:'生産国',re:['生産国','原産国','国名','Country','Origin']},
+  {k:'region',ja:'地域',re:['生産地域','生産地','産地','地域','地区','エリア','Region','Area']},
+  {k:'farm',ja:'農園・ステーション',re:['農園名','農園','ファーム','ウォッシングステーション','ステーション','精製所','Farm','Estate','Washing Station','Station']},
+  {k:'producer',ja:'生産者',re:['生産者名','生産者','農園主','オーナー','Producer','Grower','Owner']},
+  {k:'variety',ja:'品種',re:['品種','Variety','Varietal','Varieties','Cultivar']},
+  {k:'process',ja:'精製方法',re:['精製方法','精製','プロセス','加工方法','Processing','Process']},
+  {k:'altitude',ja:'標高',re:['栽培標高','標高','Altitude','Elevation']},
+  {k:'harvest',ja:'収穫時期',re:['収穫時期','収穫年','収穫','クロップ','Harvest','Crop']},
+  {k:'lot',ja:'ロット',re:['ロット名','ロット','Lot']},
+  {k:'notes',ja:'販売元のフレーバー',re:['フレーバーノート','テイスティングノート','カッピングノート','フレーバー','味わい','Tasting Notes','Flavor Notes','Cup Notes','Flavour','Flavor','Notes']}
+];
+const COUNTRIES=['エチオピア','ケニア','コロンビア','パナマ','グアテマラ','コスタリカ','エルサルバドル','ホンジュラス','ニカラグア','ブラジル','ペルー','ボリビア','エクアドル','ブルンジ','ルワンダ','タンザニア','ウガンダ','イエメン','インドネシア','メキシコ','ジャマイカ','ハワイ','ベトナム','ミャンマー','パプアニューギニア','東ティモール','コンゴ','中国','インド','タイ','ラオス','フィリピン','Ethiopia','Kenya','Colombia','Panama','Guatemala','Costa Rica','El Salvador','Honduras','Nicaragua','Brazil','Peru','Bolivia','Ecuador','Burundi','Rwanda','Tanzania','Uganda','Yemen','Indonesia','Mexico','Jamaica','Hawaii','Vietnam','Myanmar','Papua New Guinea','Timor','Congo','China','India','Thailand','Laos','Philippines'];
+const PROCESSES=['アナエロビック・ナチュラル','アナエロビック・ウォッシュト','アナエロビック','カーボニックマセレーション','ダブルファーメンテーション','イーストファーメンテーション','ウェットハル','スマトラ式','ブラックハニー','レッドハニー','イエローハニー','ホワイトハニー','パルプドナチュラル','セミウォッシュト','フリーウォッシュト','ウォッシュト','ウォッシュド','ナチュラル','ハニー','Anaerobic Natural','Anaerobic Washed','Anaerobic','Carbonic Maceration','Double Fermentation','Wet Hulled','Black Honey','Red Honey','Yellow Honey','White Honey','Pulped Natural','Semi-Washed','Fully Washed','Washed','Natural','Honey'];
+const VARIETIES=['ゲイシャ','ゲシャ','ピンクブルボン','イエローブルボン','レッドブルボン','ブルボン','カトゥーラ','カトゥアイ','パカマラ','パカス','ティピカ','SL28','SL34','ルイル11','バティアン','シドラ','ウシュウシュ','ジャバ','マラゴジッペ','マラカトゥーラ','カスティージョ','ヘアルーム','エチオピア原種','74110','74112','74158','Gesha','Geisha','Pink Bourbon','Yellow Bourbon','Red Bourbon','Bourbon','Caturra','Catuai','Pacamara','Pacas','Typica','Ruiru 11','Batian','Sidra','Wush Wush','Java','Maragogype','Castillo','Heirloom'];
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+function parseInfo(text){
+  const out={};
+  const lines=text.split(/\r?\n/).map(l=>l.replace(/[\u3000\t]+/g,' ').trim()).filter(Boolean);
+  const labels=[];INFO.forEach(f=>f.re.forEach(lb=>labels.push([lb,f.k])));
+  labels.sort((a,b)=>b[0].length-a[0].length);
+  const lead='^[\\s・●■◆◇○□★☆▪\\-\\*【\\[]*';
+  const tidy=v=>v.replace(/^[\s:：|｜\/／=＝]+/,'').replace(/[。、,\s]+$/,'').slice(0,120);
+  const onlyLabel=ln=>labels.some(([lb])=>new RegExp(lead+escRe(lb)+'[】\\]]?\\s*[:：]?$','i').test(ln));
+  for(let i=0;i<lines.length;i++){
+    const ln=lines[i];
+    for(const [lb,k] of labels){
+      if(out[k])continue;
+      const m=ln.match(new RegExp(lead+escRe(lb)+'[】\\]]?\\s*(?:[:：|｜/／=＝]|\\s)\\s*(.+)$','i'));
+      if(m&&m[1].trim()){
+        const sep=/[:：|｜/／=＝】\]]/.test(ln.slice(0,ln.length-m[1].length));
+        if(sep||m[1].length<=40){out[k]=tidy(m[1]);break}
+      }
+      if(new RegExp(lead+escRe(lb)+'[】\\]]?\\s*[:：]?$','i').test(ln)&&lines[i+1]&&!onlyLabel(lines[i+1])){out[k]=tidy(lines[i+1]);break}
+    }
+  }
+  const find=list=>{for(const w of list){const re=/^[A-Za-z0-9 ]+$/.test(w)?new RegExp('\\b'+escRe(w)+'\\b','i'):new RegExp(escRe(w));if(re.test(text))return w}return ''};
+  if(!out.country){const c=find(COUNTRIES);if(c)out.country=c}
+  if(!out.process){const p=find(PROCESSES);if(p)out.process=p}
+  if(!out.variety){const v=find(VARIETIES);if(v)out.variety=v}
+  if(!out.altitude){const m=text.match(/(\d{1,2},?\d{3}|\d{3,4})\s*(?:(?:-|–|〜|～|~|－)\s*(\d{1,2},?\d{3}|\d{3,4}))?\s*(?:m(?![a-z])|ｍ|メートル|masl)/i);if(m)out.altitude=m[1]+(m[2]?'〜'+m[2]:'')+'m'}
+  return out;
+}
+function shortInfo(s){const i=s.info||{};return [i.country,i.farm||i.region,i.process].filter(Boolean).join(' / ')||s.origin||''}
+const $=id=>document.getElementById(id);
+function newSample(n){const a={};ATTRS.forEach(x=>a[x.k]=6);
+  return{code:'#'+n,origin:'',info:{},roast:3,dry:2,crust:2,brk:2,aroma:'',attrs:a,notes:{},acidI:'M',mouthI:'M',defCups:0,defI:1,defType:'taint',memo:''};}
+function fresh(){return{session:{name:'',date:new Date().toISOString().slice(0,10),cupper:'',cups:'4'},cur:0,samples:[newSample(1)],timer:{start:0,acc:0,run:false,fired:[]},sound:true};}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.samples||!S.samples.length)S=fresh();
+let shared=false;
+if(location.hash.indexOf('#d=')===0){try{
+  const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3).replace(/-/g,'+').replace(/_/g,'/')))));
+  if(d&&d.samples&&d.samples.length){
+    try{if(!localStorage.getItem(KEY+'-backup'))localStorage.setItem(KEY+'-backup',JSON.stringify(S))}catch(e){}
+    S.session=Object.assign({cups:'4'},d.session||{});S.samples=d.samples;S.cur=0;shared=true;
+  }}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const cur=()=>S.samples[S.cur];
+function defect(s){return s.defCups*s.defI*4}
+function total(s){let t=36;ATTRS.forEach(x=>t+=Number(s.attrs[x.k]));return t-defect(s)}
+function tier(t){if(t>=90)return['プレジデンシャル・アワード水準（90点以上）','tier-pa'];
+  if(t>=87)return['COE入賞水準（87点以上）','tier-coe'];
+  if(t>=84)return['スペシャルティ上位（84点以上）','tier-na'];return['',''];}
+const f1=n=>Number(n).toFixed(1);
+
+/* ---------- session ---------- */
+document.querySelectorAll('[data-s]').forEach(el=>{
+  el.value=S.session[el.dataset.s]||'';
+  el.addEventListener('input',()=>{S.session[el.dataset.s]=el.value;
+    if(el.dataset.s==='cups'){S.samples.forEach(s=>{if(s.defCups>+el.value)s.defCups=+el.value});renderForm()}
+    save()});
+});
+
+/* ---------- tabs ---------- */
+function renderTabs(){
+  $('tabs').innerHTML=S.samples.map((s,i)=>`<button class="tab${i===S.cur?' on':''}" role="tab" aria-selected="${i===S.cur}" data-tab="${i}">${esc(s.code)}<small class="num">${f1(total(s))}</small></button>`).join('')+
+  (S.samples.length<12?'<button class="tab add" data-add="1">＋ サンプル追加</button>':'');
+}
+$('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab]'),a=e.target.closest('[data-add]');
+  if(t){S.cur=+t.dataset.tab}
+  else if(a){S.samples.push(newSample(S.samples.length+1));S.cur=S.samples.length-1}
+  else return;
+  save();renderAll();window.scrollTo({top:$('tabs').offsetTop-140});
+});
+
+/* ---------- form ---------- */
+function seg(field,opts,val){return `<div class="seg">${opts.map(([v,l])=>`<button type="button" data-f="${field}" data-v="${v}" class="${String(val)===String(v)?'on':''}">${l}</button>`).join('')}</div>`}
+function renderForm(){
+  const s=cur(),cups=+S.session.cups||4,info=s.info||(s.info={}),hasInfo=Object.values(info).some(Boolean);
+  const lvl=[[1,'弱'],[2,'中'],[3,'強']];
+  const cupOpts=[];for(let i=0;i<=cups;i++)cupOpts.push([i,i]);
+  $('form').innerHTML=`
+  <section class="panel">
+    <div><label class="f">サンプルコード</label><input data-t="code" value="${esc(s.code)}"></div>
+    <details class="ms" style="margin-top:12px" ${hasInfo?'open':''}>
+      <summary>豆の情報</summary>
+      <label class="f" for="pasteBox" style="margin-top:10px">販売ページなどの文章を貼り付けると、項目を読み取って下に入力します</label>
+      <textarea id="pasteBox" placeholder="例：\n生産国：エチオピア\n地域：グジ\n品種：ヘアルーム\n精製方法：ナチュラル\n標高：2,100m"></textarea>
+      <div class="actions" style="align-items:center"><button class="btn" type="button" id="parseBtn">文章から読み取る</button><span class="hint" id="parseMsg"></span></div>
+      <div class="grid2" style="margin-top:10px">
+        ${INFO.map(x=>`<div><label class="f">${x.ja}</label><input data-i="${x.k}" value="${esc(info[x.k]||'')}"></div>`).join('')}
+      </div>
+      ${s.origin?`<div class="hint" style="margin-top:8px">以前のメモ：${esc(s.origin)}</div>`:''}
+    </details>
+    <div style="margin-top:12px"><label class="f">ローストカラー（採点外）</label>
+      ${seg('roast',[[1,'極浅'],[2,'浅'],[3,'中浅'],[4,'中'],[5,'深']],s.roast)}</div>
+    <div style="margin-top:12px"><label class="f">アロマの強さ（採点外）</label>
+      <div class="grid3">
+        <div><div class="hint">ドライ</div>${seg('dry',lvl,s.dry)}</div>
+        <div><div class="hint">クラスト</div>${seg('crust',lvl,s.crust)}</div>
+        <div><div class="hint">ブレイク</div>${seg('brk',lvl,s.brk)}</div>
+      </div>
+      <textarea class="note" data-t="aroma" placeholder="アロマの記述（例：ジャスミン、白桃、黒糖）">${esc(s.aroma)}</textarea>
+    </div>
+  </section>
+
+  <h2>採点項目（各0〜8点、0.5刻み）</h2>
+  <section class="panel">
+    ${ATTRS.map(x=>`
+    <div class="attr">
+      <div class="attr-head"><span class="attr-name">${x.ja}</span><span class="attr-en">${x.en}</span>
+        <span class="attr-val num" id="v-${x.k}">${f1(s.attrs[x.k])}</span></div>
+      <div class="hint">${x.h}</div>
+      <div class="attr-ctl">
+        <button class="step" type="button" data-step="-0.5" data-k="${x.k}" aria-label="${x.ja}を0.5下げる">−</button>
+        <input type="range" min="0" max="8" step="0.5" value="${s.attrs[x.k]}" data-a="${x.k}" aria-label="${x.ja}">
+        <button class="step" type="button" data-step="0.5" data-k="${x.k}" aria-label="${x.ja}を0.5上げる">＋</button>
+      </div>
+      <div class="scale"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span></div>
+      ${x.int?`<div class="intensity">強度（採点外）${seg(x.int,[['L','低'],['M','中'],['H','高']],s[x.int])}</div>`:''}
+      <input class="note" data-n="${x.k}" value="${esc(s.notes[x.k]||'')}" placeholder="メモ">
+    </div>`).join('')}
+  </section>
+
+  <h2>欠点（減点）</h2>
+  <section class="panel">
+    <div class="grid2">
+      <div><label class="f">種類</label>${seg('defType',[['taint','テイント'],['fault','フォルト']],s.defType)}</div>
+      <div><label class="f">強度</label>${seg('defI',lvl,s.defI)}</div>
+    </div>
+    <div style="margin-top:12px"><label class="f">欠点のあるカップ数（全${cups}カップ中）</label>${seg('defCups',cupOpts,s.defCups)}</div>
+    <div class="defcalc">カップ数 ${s.defCups} × 強度 ${s.defI} × 4 ＝ <span class="num" id="defOut">−${defect(s)}</span></div>
+  </section>
+
+  <h2>総評</h2>
+  <section class="panel">
+    <textarea data-t="memo" placeholder="全体の印象、温度変化による違い、他サンプルとの比較など">${esc(s.memo)}</textarea>
+    <div class="actions"><button class="btn danger" id="delSample">このサンプルを削除</button></div>
+  </section>`;
+}
+const form=$('form');
+form.addEventListener('input',e=>{
+  const el=e.target,s=cur();
+  if(el.dataset.a){s.attrs[el.dataset.a]=+el.value;$('v-'+el.dataset.a).textContent=f1(el.value)}
+  else if(el.dataset.t){s[el.dataset.t]=el.value;if(el.dataset.t==='code'){renderTabs();renderSummary()}}
+  else if(el.dataset.i){(s.info||(s.info={}))[el.dataset.i]=el.value;renderSummary()}
+  else if(el.dataset.n){s.notes[el.dataset.n]=el.value}
+  updateTotals();save();
+});
+let armDel=null;
+form.addEventListener('click',e=>{
+  const s=cur(),st=e.target.closest('[data-step]'),sg=e.target.closest('[data-f]');
+  if(st){const k=st.dataset.k;s.attrs[k]=Math.min(8,Math.max(0,s.attrs[k]+Number(st.dataset.step)));
+    form.querySelector(`[data-a="${k}"]`).value=s.attrs[k];$('v-'+k).textContent=f1(s.attrs[k]);updateTotals();save();return}
+  if(sg){const f=sg.dataset.f,v=sg.dataset.v;s[f]=isNaN(+v)?v:+v;
+    sg.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===sg));
+    if(f==='defCups'||f==='defI'){form.querySelector('.defcalc').innerHTML=`カップ数 ${s.defCups} × 強度 ${s.defI} × 4 ＝ <span class="num" id="defOut">−${defect(s)}</span>`;updateTotals()}
+    save();return}
+  if(e.target.id==='parseBtn'){
+    const txt=$('pasteBox').value;
+    if(!txt.trim()){$('parseMsg').textContent='先に文章を貼り付けてください';return}
+    const got=parseInfo(txt),keys=Object.keys(got);
+    s.info=Object.assign(s.info||{},got);save();renderForm();renderSummary();
+    const miss=INFO.filter(x=>!s.info[x.k]).map(x=>x.ja);
+    $('parseMsg').textContent=keys.length?`${keys.length}項目を読み取りました。内容を確認してください`+(miss.length?`（空欄：${miss.join('、')}）`:''):'項目を見つけられませんでした。手入力してください';
+    return}
+  if(e.target.id==='delSample'){const b=e.target;
+    if(S.samples.length<2){b.textContent='サンプルが1つのため削除できません';return}
+    if(armDel!==b){armDel=b;b.textContent='もう一度押すと削除';b.classList.add('arm');setTimeout(()=>{if(armDel===b){armDel=null;b.textContent='このサンプルを削除';b.classList.remove('arm')}},3000);return}
+    armDel=null;S.samples.splice(S.cur,1);S.cur=Math.max(0,S.cur-1);save();renderAll()}
+});
+
+/* ---------- totals & summary ---------- */
+function updateTotals(){
+  const s=cur(),t=total(s),[tl,tc]=tier(t);
+  $('tbCode').textContent=s.code||'—';
+  $('tbSub').textContent=s.defCups?`欠点 −${defect(s)}`:'欠点なし';
+  $('tbScore').textContent=f1(t);
+  $('tbTier').textContent=tl;$('tbTier').className='tb-tier '+tc;
+  const tab=$('tabs').querySelector(`[data-tab="${S.cur}"] small`);if(tab)tab.textContent=f1(t);
+  renderSummary();
+}
+function renderSummary(){
+  const rows=S.samples.map((s,i)=>({s,i,t:total(s)})).sort((a,b)=>b.t-a.t);
+  $('sumTable').innerHTML=`<thead><tr><th>順位</th><th style="text-align:left">サンプル</th><th style="text-align:left">豆</th>${ATTRS.map(x=>`<th title="${x.ja}">${x.en.split(' ')[0]}</th>`).join('')}<th>欠点</th><th>合計</th></tr></thead><tbody>`+
+  rows.map((r,n)=>`<tr class="${n===0?'rank1':''}"><td>${n+1}</td><td class="code">${esc(r.s.code)}</td><td style="text-align:left">${esc(shortInfo(r.s))}</td>${ATTRS.map(x=>`<td class="num">${f1(r.s.attrs[x.k])}</td>`).join('')}<td class="num">${defect(r.s)?'−'+defect(r.s):'0'}</td><td class="tot num">${f1(r.t)}</td></tr>`).join('')+'</tbody>';
+}
+function renderAll(){renderTabs();renderForm();updateTotals()}
+
+/* ---------- export / reset ---------- */
+const L={1:'弱',2:'中',3:'強'},I={L:'低',M:'中',H:'高'},R={1:'極浅',2:'浅',3:'中浅',4:'中',5:'深'};
+function asText(){
+  const ss=S.session;let o=`【COE式カッピング】${ss.name||''}\n日付：${ss.date||''}　カッパー：${ss.cupper||''}　カップ数：${ss.cups}\n`;
+  S.samples.map(s=>({s,t:total(s)})).sort((a,b)=>b.t-a.t).forEach(({s,t},n)=>{
+    o+=`\n${n+1}. ${s.code}　合計 ${f1(t)}\n`;
+    const inf=INFO.filter(x=>(s.info||{})[x.k]).map(x=>`${x.ja}：${s.info[x.k]}`);if(s.origin)inf.unshift(s.origin);
+    if(inf.length)o+=`  ${inf.join('　')}\n`;
+    o+=`  ロースト：${R[s.roast]}　アロマ ドライ${L[s.dry]}／クラスト${L[s.crust]}／ブレイク${L[s.brk]}${s.aroma?'　'+s.aroma:''}\n`;
+    ATTRS.forEach(x=>{o+=`  ${x.ja}：${f1(s.attrs[x.k])}${x.int?'（強度'+I[s[x.int]]+'）':''}${s.notes[x.k]?'　'+s.notes[x.k]:''}\n`});
+    o+=`  欠点：${s.defCups?`${s.defType==='fault'?'フォルト':'テイント'} ${s.defCups}×${s.defI}×4＝−${defect(s)}`:'なし'}\n`;
+    if(s.memo)o+=`  総評：${s.memo}\n`;
+  });return o;
+}
+$('copyBtn').addEventListener('click',async()=>{
+  const txt=asText(),box=$('copybox'),b=$('copyBtn');
+  try{await navigator.clipboard.writeText(txt);b.textContent='コピーしました';setTimeout(()=>b.textContent='結果をテキストでコピー',2000)}
+  catch(e){box.style.display='block';box.value=txt;box.focus();box.select();b.textContent='下の欄から手動でコピーしてください'}
+});
+async function copyText(txt,b,label){const box=$('copybox');
+  try{await navigator.clipboard.writeText(txt);b.textContent='コピーしました';setTimeout(()=>b.textContent=label,2000)}
+  catch(e){box.style.display='block';box.value=txt;box.focus();box.select();b.textContent='下の欄から手動でコピーしてください'}}
+$('shareBtn').addEventListener('click',e=>{
+  const d={session:S.session,samples:S.samples};
+  const b64=btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  copyText(location.origin+location.pathname+'#d='+b64,e.currentTarget,'共有リンクを作成');
+});
+$('csvBtn').addEventListener('click',()=>{
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const head=['順位','サンプル',...INFO.map(x=>x.ja),'ロースト',...ATTRS.map(x=>x.ja),'酸の強度','マウスフィールの強度','欠点','合計','総評'];
+  const rows=S.samples.map(s=>({s,t:total(s)})).sort((a,b)=>b.t-a.t).map(({s,t},n)=>[n+1,s.code,...INFO.map(x=>(s.info||{})[x.k]||''),R[s.roast],...ATTRS.map(x=>f1(s.attrs[x.k])),I[s.acidI],I[s.mouthI],-defect(s),f1(t),s.memo]);
+  const csv='\ufeff'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`cupping_${S.session.date||'result'}.csv`;document.body.appendChild(a);a.click();a.remove();
+});
+function clearHash(){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
+$('restoreBtn').addEventListener('click',()=>{try{const b=localStorage.getItem(KEY+'-backup');if(b)localStorage.setItem(KEY,b);localStorage.removeItem(KEY+'-backup')}catch(e){}clearHash();location.reload()});
+$('keepBtn').addEventListener('click',()=>{try{localStorage.removeItem(KEY+'-backup')}catch(e){}clearHash();$('sharedBanner').hidden=true});
+let armAll=false;
+$('resetAll').addEventListener('click',e=>{const b=e.currentTarget;
+  if(!armAll){armAll=true;b.textContent='もう一度押すと全消去';b.classList.add('arm');setTimeout(()=>{armAll=false;b.textContent='全データを消去';b.classList.remove('arm')},3000);return}
+  armAll=false;S=fresh();save();location.reload()});
+
+/* ---------- timer ---------- */
+const LIMIT=2400;
+$('bar').insertAdjacentHTML('beforeend',MS.slice(1,-1).map(m=>`<span class="tick" style="left:${m.t/LIMIT*100}%"></span>`).join(''));
+let actx=null;
+function beep(n){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  for(let i=0;i<n;i++){const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);
+    const t=actx.currentTime+i*.28;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.start(t);o.stop(t+.22)}}catch(e){}
+  try{navigator.vibrate&&navigator.vibrate(n>1?[200,100,200]:200)}catch(e){}}
+function elapsed(){const t=S.timer;return Math.floor((t.acc+(t.run?Date.now()-t.start:0))/1000)}
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function renderMS(sec){
+  let nowI=-1;MS.forEach((m,i)=>{if(sec>=m.t)nowI=i});
+  const started=S.timer.run||S.timer.acc>0;
+  $('msList').innerHTML=MS.map((m,i)=>`<li class="${started&&i<nowI?'done':''}${started&&i===nowI?' now':''}"><span class="t num">${mmss(m.t)}</span><div><div class="l">${m.l}</div><div class="d">${m.d}</div></div></li>`).join('');
+  return nowI;
+}
+let lastNow=-2;
+function tick(){
+  const sec=elapsed(),t=S.timer,started=t.run||t.acc>0;
+  $('clock').textContent=mmss(sec);$('clock').classList.toggle('over',sec>=LIMIT);
+  $('barFill').style.width=Math.min(100,sec/LIMIT*100)+'%';
+  let nowI=-1;MS.forEach((m,i)=>{if(sec>=m.t)nowI=i});
+  if(t.run){MS.forEach((m,i)=>{if(m.t>0&&sec>=m.t&&!t.fired.includes(i)){t.fired.push(i);save();if(sec-m.t<5)beep(i===MS.length-1?3:2)}})}
+  if(!started){$('phaseNow').innerHTML='注湯前：<b>ドライアロマを評価</b>';$('phaseNext').textContent=''}
+  else if(sec>=LIMIT){$('phaseNow').innerHTML='<b>40分経過</b>　延長して計測中';$('phaseNext').textContent=''}
+  else{const nx=MS[nowI+1];$('phaseNow').innerHTML='<b>'+MS[nowI].l+'</b>';$('phaseNext').textContent=nx?`次：${nx.l}まで ${mmss(nx.t-sec)}`:''}
+  if(nowI!==lastNow||!started){lastNow=nowI;renderMS(sec)}
+}
+$('tStart').addEventListener('click',()=>{const t=S.timer;
+  if(t.run){t.acc+=Date.now()-t.start;t.run=false}
+  else{t.start=Date.now();t.run=true;if(!actx&&S.sound){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}}
+  syncTimerBtn();save();tick()});
+$('tReset').addEventListener('click',()=>{S.timer={start:0,acc:0,run:false,fired:[]};lastNow=-2;syncTimerBtn();save();tick()});
+function syncTimerBtn(){const t=S.timer;$('tStart').textContent=t.run?'一時停止':(t.acc>0?'再開':'注湯スタート');$('tStart').classList.toggle('go',!t.run)}
+function syncSound(){$('soundBtn').textContent=S.sound?'通知音：オン':'通知音：オフ'}
+$('soundBtn').addEventListener('click',()=>{S.sound=!S.sound;syncSound();save()});
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+if(shared){$('sharedBanner').hidden=false;save()}
+syncTimerBtn();syncSound();renderAll();tick();setInterval(tick,250);
+document.addEventListener('visibilitychange',tick);
+})();
+</script>
+</body>
+</html>
