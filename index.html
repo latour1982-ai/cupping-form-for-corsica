@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>COE式カッピングシート</title>
+<title>COE cupping form for corsica</title>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d211d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="COE cupping form for corsica">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
@@ -164,6 +173,14 @@ td.ok{color:var(--bean);font-weight:800}
 #copybox{display:none;margin-top:10px;min-height:160px;font-size:12px}
 .banner{border-color:var(--bean);background:var(--bean-soft);margin-bottom:12px}
 [hidden]{display:none!important}
+.a2hs{border:1px dashed var(--line);border-radius:10px;padding:8px 10px 8px 12px;margin-bottom:12px;font-size:13px;color:var(--sub)}
+.a2hs-row{display:flex;align-items:center;gap:8px}
+.a2hs-row span{flex:1}
+.a2hs-link{border:0;background:none;color:var(--cherry);font-weight:700;padding:4px 6px;font-size:13px}
+.a2hs-x{border:0;background:none;color:var(--sub);font-size:18px;line-height:1;padding:4px 6px}
+.a2hs ol{margin:8px 0 2px;padding-left:1.4em;color:var(--ink)}
+.a2hs li{margin:3px 0}
+.a2hs svg{vertical-align:-3px;color:var(--cherry)}
 
 /* total bar */
 .totalbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--paper);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
@@ -212,6 +229,10 @@ td.ok{color:var(--bean);font-weight:800}
 </header>
 
 <main>
+  <div class="a2hs" id="a2hs" hidden>
+    <div class="a2hs-row"><span>📱 ホーム画面に追加すると、アプリのように全画面で使えます</span><button class="a2hs-link" id="a2hsHow" aria-expanded="false">方法</button><button class="a2hs-x" id="a2hsX" aria-label="この案内を閉じる">×</button></div>
+    <ol id="a2hsSteps" hidden></ol>
+  </div>
   <section class="panel banner" id="sharedBanner" hidden>
     <div style="font-weight:700">共有された結果を表示しています</div>
     <div class="hint">それまでのあなたのデータは控えてあります。</div>
@@ -571,7 +592,7 @@ function renderAll(){renderTabs();renderForm();updateTotals()}
 /* ---------- export / share / reset ---------- */
 const L={1:'弱',2:'中',3:'強'},I={L:'低',M:'中',H:'高'},R={1:'極浅',2:'浅',3:'中浅',4:'中',5:'深'};
 function asText(){
-  const ss=S.session;let o=`【COE式カッピング】${ss.name||''}\n日付：${ss.date||''}　カッパー：${ss.cupper||''}　カップ数：${ss.cups}\n`;
+  const ss=S.session;let o=`【COE cupping form for corsica】${ss.name||''}\n日付：${ss.date||''}　カッパー：${ss.cupper||''}　カップ数：${ss.cups}\n`;
   ranked().forEach(({s,r},n)=>{
     o+=`\n${r.t===null?'－':n+1}. ${s.code}　合計 ${fs(r)}${r.miss&&r.t!==null?`（暫定：${r.miss}項目を平均で補完）`:''}${s.done?'　✓完了':''}\n`;
     const inf=INFO.filter(x=>(s.info||{})[x.k]).map(x=>`${x.ja}：${s.info[x.k]}`);if(s.origin)inf.unshift(s.origin);
@@ -657,6 +678,20 @@ try{new ResizeObserver(setHdr).observe($('hdr'))}catch(e){window.addEventListene
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
+(function(){
+  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),android=/Android/.test(ua);
+  const standalone=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  let inFrame=false;try{inFrame=window.top!==window.self}catch(e){inFrame=true}
+  let dismissed=false;try{dismissed=localStorage.getItem(KEY+'-a2hs')==='1'}catch(e){}
+  if(standalone||dismissed||inFrame||!(ios||android))return;
+  const share='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="共有"><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/></svg>';
+  const steps=ios?[`Safariの共有ボタン ${share} をタップ（iPhoneは画面下、iPadは右上）`,'メニューを下にスクロールして「ホーム画面に追加」を選ぶ','右上の「追加」をタップ','LINEなどのアプリ内で開いている場合は、先にSafariで開き直してください']
+    :['Chromeの右上にある ⋮ メニューをタップ','「ホーム画面に追加」または「アプリをインストール」を選ぶ','「追加」または「インストール」をタップ'];
+  $('a2hsSteps').innerHTML=steps.map(s=>`<li>${s}</li>`).join('');
+  $('a2hs').hidden=false;
+  $('a2hsHow').addEventListener('click',e=>{const o=$('a2hsSteps').hidden;$('a2hsSteps').hidden=!o;e.currentTarget.textContent=o?'閉じる':'方法';e.currentTarget.setAttribute('aria-expanded',o)});
+  $('a2hsX').addEventListener('click',()=>{$('a2hs').hidden=true;try{localStorage.setItem(KEY+'-a2hs','1')}catch(e){}});
+})();
 if(shared){$('sharedBanner').hidden=false;save()}
 setHdr();syncTimerBtn();syncSound();renderAll();tick();setInterval(tick,250);
 document.addEventListener('visibilitychange',tick);

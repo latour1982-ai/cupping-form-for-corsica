@@ -1,0 +1,21 @@
+{
+  "name": "COE cupping form for corsica",
+  "short_name": "COE cupping form for corsica",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f2ed",
+  "theme_color": "#6e1222",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
