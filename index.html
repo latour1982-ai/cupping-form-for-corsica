@@ -29,34 +29,39 @@
   --cherry:#e0566b; --cherry-soft:#3a1d23; --bean:#9cbc8f; --bean-soft:#24301f;
   --amber:#e3a44b; --track:#2c322b; color-scheme:dark;
 }
-html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 130px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--hdr,140px) + 70px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);
   font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
   font-size:15px;line-height:1.6;-webkit-text-size-adjust:100%}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 .num{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-variant-numeric:tabular-nums}
-button{font:inherit;color:inherit;cursor:pointer}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}
 input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
 textarea{min-height:56px;resize:vertical}
 
 /* Timer header */
-.timer{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px 12px}
+.timer{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px 10px}
 .timer-row{display:flex;align-items:center;gap:12px;max-width:760px;margin:0 auto}
 .clock{font-size:44px;font-weight:800;line-height:1;letter-spacing:.01em;min-width:3.6em}
 .clock.over{color:var(--amber)}
 .tbtns{display:flex;gap:8px;margin-left:auto}
 .tbtn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 14px;font-weight:700}
 .tbtn.go{background:var(--cherry);border-color:var(--cherry);color:#fff}
-.phase{max-width:760px;margin:8px auto 0;font-size:13px;color:var(--sub);display:flex;justify-content:space-between;gap:8px}
+.ff{max-width:760px;margin:8px auto 0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.ff::-webkit-scrollbar{display:none}
+.ff button{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:700}
+.ff button.next{border-color:var(--cherry);color:var(--cherry)}
+.phase{max-width:760px;margin:6px auto 0;font-size:13px;color:var(--sub);display:flex;justify-content:space-between;gap:8px}
 .phase b{color:var(--ink);font-weight:700}
 .bar{max-width:760px;margin:6px auto 0;height:6px;background:var(--track);border-radius:3px;position:relative;overflow:hidden}
 .bar i{position:absolute;inset:0 auto 0 0;background:var(--cherry);width:0}
 .bar .tick{position:absolute;top:0;bottom:0;width:2px;background:var(--paper)}
 
 main{max-width:760px;margin:0 auto;padding:16px 16px 120px}
-h2{font-size:17px;margin:28px 0 10px;font-weight:700}
+h2{font-size:17px;margin:28px 0 10px;font-weight:700;display:flex;align-items:baseline;gap:10px}
+h2 small{font-size:13px;color:var(--sub);font-weight:500}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -65,6 +70,7 @@ label.f{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
 
 /* milestones */
 details.ms summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+details.ms summary::-webkit-details-marker{display:none}
 details.ms summary::after{content:"＋";color:var(--sub)}
 details.ms[open] summary::after{content:"－"}
 .ms ol{list-style:none;margin:10px 0 0;padding:0}
@@ -75,13 +81,29 @@ details.ms[open] summary::after{content:"－"}
 .ms .l{font-weight:700}
 .ms .d{font-size:13px;color:var(--sub)}
 
-/* sample tabs */
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+/* bean info */
+details.beans summary{display:flex;align-items:center;gap:10px;border:1px solid var(--bean);background:var(--bean-soft);border-radius:10px;padding:10px 12px}
+details.beans summary::after{content:none}
+.bs-t{font-weight:700;color:var(--bean);flex:0 0 auto}
+.bs-s{font-size:12px;color:var(--sub);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bs-a{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--bean)}
+.bs-a::after{content:"開く ▼"}
+details.beans[open] .bs-a::after{content:"閉じる ▲"}
+#pasteBox{min-height:110px}
+
+/* sticky sample bar */
+.tabbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdr,140px));z-index:5;background:var(--bg);display:flex;align-items:center;gap:6px;margin:0 -16px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none;flex:1;min-width:0;scroll-behavior:smooth}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 12px;text-align:left;line-height:1.3}
+.nav{flex:0 0 40px;height:46px;border:1px solid var(--line);background:var(--paper);border-radius:10px;font-size:15px}
+.nav:disabled{opacity:.3;cursor:default}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:5px 12px;text-align:left;line-height:1.3;min-height:46px}
 .tab small{display:block;font-size:12px;color:var(--sub)}
 .tab.on{border-color:var(--cherry);box-shadow:inset 0 0 0 1px var(--cherry)}
+.tab.done{background:var(--bean-soft)}
+.tab .ck{color:var(--bean);font-weight:800;margin-right:3px}
 .tab.add{color:var(--bean);font-weight:700;border-style:dashed}
+.swipehint{font-size:12px;color:var(--sub);text-align:center;margin:8px 0 0}
 
 /* segmented */
 .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -95,51 +117,56 @@ details.ms[open] summary::after{content:"－"}
 .attr-head{display:flex;align-items:baseline;gap:8px}
 .attr-name{font-weight:700;font-size:16px}
 .attr-en{font-size:12px;color:var(--sub)}
+.skip{margin-left:auto;border:0;background:none;color:var(--sub);font-size:12px;text-decoration:underline;padding:4px 2px}
 .attr-val{margin-left:auto;font-size:28px;font-weight:800;min-width:2.4em;text-align:right}
+.skip:not([hidden])+.attr-val{margin-left:4px}
+.attr.unset .attr-val{color:var(--sub);font-weight:600}
 .attr-ctl{display:flex;align-items:center;gap:10px;margin:6px 0}
-.step{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;line-height:1}
-input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;border:0;padding:0;height:38px}
+.step{width:40px;height:40px;flex:0 0 40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;line-height:1}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;border:0;padding:0;height:40px}
 input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--track)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:var(--cherry);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--cherry)}
 input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--track)}
 input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--cherry);border:3px solid var(--paper)}
-.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);padding:0 48px}
+.attr.unset input[type=range]::-webkit-slider-thumb{background:var(--line);box-shadow:0 0 0 1px var(--sub)}
+.attr.unset input[type=range]::-moz-range-thumb{background:var(--line)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);padding:0 50px}
 .intensity{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--sub)}
 .intensity .seg{flex:0 0 150px}
 .note{margin-top:8px}
+fieldset.fs{border:0;margin:0;padding:0;min-width:0}
+fieldset.fs:disabled{opacity:.55}
 
-/* defects */
 .defcalc{margin-top:10px;font-size:14px}
 .defcalc .num{font-size:22px;color:var(--cherry);font-weight:800}
 
+/* completion */
+.finish{margin-top:16px}
+.donebox{border-color:var(--bean);background:var(--bean-soft)}
+.donebox b{color:var(--bean)}
+
 /* summary */
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
 th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
 th{color:var(--sub);font-weight:500}
 td.code{text-align:left;font-weight:700}
 td.tot{font-weight:800;font-size:16px}
+td.ok{color:var(--bean);font-weight:800}
 .rank1 td.tot{color:var(--cherry)}
 
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 14px;font-weight:700}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 14px;font-weight:700}
 .btn.danger{color:var(--cherry)}
 .btn.arm{background:var(--cherry);color:#fff;border-color:var(--cherry)}
+.btn.primary{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.btn.ok{background:var(--bean);border-color:var(--bean);color:#fff}
 #copybox{display:none;margin-top:10px;min-height:160px;font-size:12px}
 .banner{border-color:var(--bean);background:var(--bean-soft);margin-bottom:12px}
 [hidden]{display:none!important}
-details.beans summary{display:flex;align-items:center;gap:10px;border:1px solid var(--bean);background:var(--bean-soft);border-radius:10px;padding:10px 12px}
-details.beans summary::after{content:none}
-details.beans summary::-webkit-details-marker{display:none}
-.bs-t{font-weight:700;color:var(--bean);flex:0 0 auto}
-.bs-s{font-size:12px;color:var(--sub);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bs-a{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--bean)}
-.bs-a::after{content:"開く ▼"}
-details.beans[open] .bs-a::after{content:"閉じる ▲"}
-#pasteBox{min-height:110px}
 
 /* total bar */
-.totalbar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--paper);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.totalbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--paper);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
 .totalbar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .tb-code{font-weight:700}
 .tb-sub{font-size:12px;color:var(--sub)}
@@ -147,23 +174,38 @@ details.beans[open] .bs-a::after{content:"閉じる ▲"}
 .tb-score .num{font-size:40px;font-weight:800}
 .tb-tier{font-size:12px;font-weight:700;margin-top:4px}
 .tier-pa{color:var(--cherry)} .tier-coe{color:var(--bean)} .tier-na{color:var(--sub)}
+
+/* toast & slide */
+.toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--ink);color:var(--paper);padding:14px 28px;border-radius:14px;font-size:26px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .15s;z-index:20;white-space:nowrap}
+.toast.show{opacity:.92}
+@keyframes inL{from{transform:translateX(32px);opacity:.2}to{transform:none;opacity:1}}
+@keyframes inR{from{transform:translateX(-32px);opacity:.2}to{transform:none;opacity:1}}
+.inL{animation:inL .18s ease-out}.inR{animation:inR .18s ease-out}
+
 @media (max-width:480px){
   .clock{font-size:38px}
-  .grid3{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .grid3{gap:6px}
   .tbtn{padding:8px 11px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.tabs{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 
-<header class="timer" aria-label="カッピングタイマー">
+<header class="timer" id="hdr" aria-label="カッピングタイマー">
   <div class="timer-row">
     <div class="clock num" id="clock">00:00</div>
     <div class="tbtns">
       <button class="tbtn go" id="tStart">注湯スタート</button>
       <button class="tbtn" id="tReset">リセット</button>
     </div>
+  </div>
+  <div class="ff" aria-label="時間の調整">
+    <button data-ff="-30">−30秒</button>
+    <button data-ff="30">+30秒</button>
+    <button data-ff="60">+1分</button>
+    <button data-ff="300">+5分</button>
+    <button class="next" id="ffNext">次の工程へ ▶▶</button>
   </div>
   <div class="bar" id="bar"><i id="barFill"></i></div>
   <div class="phase"><span id="phaseNow">注湯前：ドライアロマを評価</span><span id="phaseNext"></span></div>
@@ -190,8 +232,13 @@ details.beans[open] .bs-a::after{content:"閉じる ▲"}
     </details>
   </section>
 
-  <h2>サンプル</h2>
-  <div class="tabs" id="tabs" role="tablist"></div>
+  <h2>サンプル <small id="doneCount"></small></h2>
+  <div class="tabbar" id="tabbar">
+    <button class="nav" id="prevS" aria-label="前のサンプル">◀</button>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <button class="nav" id="nextS" aria-label="次のサンプル">▶</button>
+  </div>
+  <p class="swipehint">採点欄を左右にスワイプしても、サンプルを切り替えられます</p>
 
   <div id="form"></div>
 
@@ -205,16 +252,17 @@ details.beans[open] .bs-a::after{content:"閉じる ▲"}
       <button class="btn danger" id="resetAll">全データを消去</button>
     </div>
     <textarea id="copybox" readonly></textarea>
-    <p class="hint" style="margin-top:12px">合計＝8項目（各0〜8点）＋36点 − 欠点。全項目6.0で84点、6.5で88点、7.0で92点が目安です。入力内容はこの端末のブラウザに自動保存されます。共有リンクには採点結果がすべて含まれ、開いた人はログインなしで閲覧できます（GitHub Pagesなどで公開した版で使えます）。</p>
+    <p class="hint" style="margin-top:12px">合計＝8項目（各0〜8点）＋36点 − 欠点。全項目6.0で84点、6.5で88点、7.0で92点が目安です。省略した項目がある場合、合計は入力した項目の平均で補った暫定値になり、＊印が付きます。入力内容はこの端末のブラウザに自動保存されます。共有リンクには採点結果がすべて含まれ、開いた人はログインなしで閲覧できます（GitHub Pagesなどで公開した版で使えます）。</p>
   </section>
 </main>
 
 <div class="totalbar">
   <div class="totalbar-in">
     <div><div class="tb-code" id="tbCode">#1</div><div class="tb-sub" id="tbSub"></div></div>
-    <div class="tb-score"><span class="num" id="tbScore">84.0</span><div class="tb-tier" id="tbTier"></div></div>
+    <div class="tb-score"><span class="num" id="tbScore">—</span><div class="tb-tier" id="tbTier"></div></div>
   </div>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function(){
@@ -229,14 +277,14 @@ const ATTRS=[
   {k:'overall',ja:'オーバーオール',en:'Overall',h:'総合的な評価。カッパー自身の判断'}
 ];
 const MS=[
-  {t:0,l:'注湯・ステイープ開始',d:'93℃前後の湯を注ぐ。注湯前にドライアロマを評価しておく'},
+  {t:0,l:'注湯・スティープ開始',d:'93℃前後の湯を注ぐ。注湯前にドライアロマを評価しておく'},
   {t:180,l:'クラストのアロマ',d:'ブレイク前にクラストの香りを確認'},
   {t:240,l:'ブレイク',d:'スプーンで3回かき混ぜ、ブレイクアロマを評価'},
   {t:480,l:'スキミング完了',d:'表面の泡と粉を取り除く'},
   {t:600,l:'テイスティング開始（高温）',d:'約70℃。フレーバー、アフターテイスト、マウスフィール'},
   {t:1200,l:'中温での確認',d:'約55〜60℃。酸の質、甘さ、バランスが見えやすい'},
   {t:1800,l:'低温での確認',d:'約40℃前後。クリーンカップと甘さの持続を確認'},
-  {t:2400,l:'最終評価・スコア確定',d:'40分。全項目を見直して確定'}
+  {t:2400,l:'最終評価・スコア確定',d:'40分。全項目を見直して確定（サンプルごとに先に完了してもかまいません）'}
 ];
 const KEY='coe-cupping-v1';
 const INFO=[
@@ -282,14 +330,16 @@ function parseInfo(text){
   if(!out.altitude){const m=text.match(/(\d{1,2},?\d{3}|\d{3,4})\s*(?:(?:-|–|〜|～|~|－)\s*(\d{1,2},?\d{3}|\d{3,4}))?\s*(?:m(?![a-z])|ｍ|メートル|masl)/i);if(m)out.altitude=m[1]+(m[2]?'〜'+m[2]:'')+'m'}
   return out;
 }
+
 function shortInfo(s){const i=s.info||{};return [i.country,i.farm||i.region,i.process].filter(Boolean).join(' / ')||s.origin||''}
 const $=id=>document.getElementById(id);
-function newSample(n){const a={};ATTRS.forEach(x=>a[x.k]=6);
-  return{code:'#'+n,origin:'',info:{},roast:3,dry:2,crust:2,brk:2,aroma:'',attrs:a,notes:{},acidI:'M',mouthI:'M',defCups:0,defI:1,defType:'taint',memo:''};}
-function fresh(){return{session:{name:'',date:new Date().toISOString().slice(0,10),cupper:'',cups:'4'},cur:0,samples:[newSample(1)],timer:{start:0,acc:0,run:false,fired:[]},sound:true};}
+function newSample(n){const a={};ATTRS.forEach(x=>a[x.k]=null);
+  return{code:'#'+n,origin:'',info:{},roast:3,dry:2,crust:2,brk:2,aroma:'',attrs:a,notes:{},acidI:'M',mouthI:'M',defCups:0,defI:1,defType:'taint',memo:'',done:false,doneAt:null};}
+function fresh(){return{session:{name:'',date:new Date().toISOString().slice(0,10),cupper:'',cups:'4'},cur:0,samples:[newSample(1)],timer:{start:0,acc:0,run:false,fired:[]},sound:true,infoOpen:false};}
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.samples||!S.samples.length)S=fresh();
+if(S.cur>=S.samples.length)S.cur=0;
 let shared=false;
 if(location.hash.indexOf('#d=')===0){try{
   const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3).replace(/-/g,'+').replace(/_/g,'/')))));
@@ -299,33 +349,68 @@ if(location.hash.indexOf('#d=')===0){try{
   }}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const cur=()=>S.samples[S.cur];
-function defect(s){return s.defCups*s.defI*4}
-function total(s){let t=36;ATTRS.forEach(x=>t+=Number(s.attrs[x.k]));return t-defect(s)}
-function tier(t){if(t>=90)return['プレジデンシャル・アワード水準（90点以上）','tier-pa'];
-  if(t>=87)return['COE入賞水準（87点以上）','tier-coe'];
-  if(t>=84)return['スペシャルティ上位（84点以上）','tier-na'];return['',''];}
+const isSet=v=>v!==null&&v!==undefined&&v!=='';
 const f1=n=>Number(n).toFixed(1);
+function defect(s){return s.defCups*s.defI*4}
+function score(s){
+  const v=ATTRS.map(x=>s.attrs[x.k]).filter(isSet).map(Number),n=v.length;
+  if(!n)return{t:null,miss:8};
+  const sum=v.reduce((a,b)=>a+b,0);
+  return{t:36+sum+(sum/n)*(8-n)-defect(s),miss:8-n};
+}
+const fs=r=>r.t===null?'—':f1(r.t)+(r.miss?'＊':'');
+function tier(r){
+  if(r.t===null)return['未採点','tier-na'];
+  if(r.miss)return[`暫定：${r.miss}項目を平均で補完`,'tier-na'];
+  if(r.t>=90)return['プレジデンシャル・アワード水準（90点以上）','tier-pa'];
+  if(r.t>=87)return['COE入賞水準（87点以上）','tier-coe'];
+  if(r.t>=84)return['スペシャルティ上位（84点以上）','tier-na'];
+  return['',''];
+}
+
+/* ---------- toast ---------- */
+let toastT=null;
+function toast(msg,ms){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms||650)}
 
 /* ---------- session ---------- */
 document.querySelectorAll('[data-s]').forEach(el=>{
   el.value=S.session[el.dataset.s]||'';
   el.addEventListener('input',()=>{S.session[el.dataset.s]=el.value;
-    if(el.dataset.s==='cups'){S.samples.forEach(s=>{if(s.defCups>+el.value)s.defCups=+el.value});renderForm()}
+    if(el.dataset.s==='cups'){S.samples.forEach(s=>{if(s.defCups>+el.value)s.defCups=+el.value});renderForm();updateTotals()}
     save()});
 });
 
-/* ---------- tabs ---------- */
+/* ---------- sample switching ---------- */
 function renderTabs(){
-  $('tabs').innerHTML=S.samples.map((s,i)=>`<button class="tab${i===S.cur?' on':''}" role="tab" aria-selected="${i===S.cur}" data-tab="${i}">${esc(s.code)}<small class="num">${f1(total(s))}</small></button>`).join('')+
-  (S.samples.length<12?'<button class="tab add" data-add="1">＋ サンプル追加</button>':'');
+  const tb=$('tabs');
+  tb.innerHTML=S.samples.map((s,i)=>`<button class="tab${i===S.cur?' on':''}${s.done?' done':''}" role="tab" aria-selected="${i===S.cur}" data-tab="${i}">${s.done?'<span class="ck">✓</span>':''}${esc(s.code)}<small class="num">${fs(score(s))}</small></button>`).join('')+
+  (S.samples.length<12?'<button class="tab add" data-add="1">＋ 追加</button>':'');
+  $('prevS').disabled=S.cur===0;$('nextS').disabled=S.cur>=S.samples.length-1;
+  $('doneCount').textContent=`完了 ${S.samples.filter(s=>s.done).length}／${S.samples.length}`;
+  const on=tb.querySelector('.tab.on');
+  if(on)tb.scrollLeft=on.offsetLeft-tb.offsetLeft-(tb.clientWidth-on.offsetWidth)/2;
+}
+function go(i){
+  if(i<0||i>=S.samples.length||i===S.cur)return;
+  const dir=i>S.cur?'inL':'inR',y=window.scrollY;
+  S.cur=i;save();renderAll();window.scrollTo(0,y);
+  const f=$('form');f.classList.remove('inL','inR');void f.offsetWidth;f.classList.add(dir);
+  toast(cur().code);
 }
 $('tabs').addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]'),a=e.target.closest('[data-add]');
-  if(t){S.cur=+t.dataset.tab}
-  else if(a){S.samples.push(newSample(S.samples.length+1));S.cur=S.samples.length-1}
-  else return;
-  save();renderAll();window.scrollTo({top:$('tabs').offsetTop-140});
+  if(t)go(+t.dataset.tab);
+  else if(a){S.samples.push(newSample(S.samples.length+1));go(S.samples.length-1)}
 });
+$('prevS').addEventListener('click',()=>go(S.cur-1));
+$('nextS').addEventListener('click',()=>go(S.cur+1));
+(function(){
+  const fm=$('form');let sx=0,sy=0,st=0,ok=false;
+  fm.addEventListener('touchstart',e=>{const t=e.touches[0];ok=e.touches.length===1&&!e.target.closest('input,textarea,select');sx=t.clientX;sy=t.clientY;st=Date.now()},{passive:true});
+  fm.addEventListener('touchend',e=>{if(!ok)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-st<800)go(S.cur+(dx<0?1:-1))},{passive:true});
+})();
+function nextIncomplete(){const n=S.samples.length;for(let j=1;j<n;j++){const i=(S.cur+j)%n;if(!S.samples[i].done)return i}return -1}
 
 /* ---------- form ---------- */
 function seg(field,opts,val){return `<div class="seg">${opts.map(([v,l])=>`<button type="button" data-f="${field}" data-v="${v}" class="${String(val)===String(v)?'on':''}">${l}</button>`).join('')}</div>`}
@@ -334,12 +419,13 @@ function renderForm(){
   const lvl=[[1,'弱'],[2,'中'],[3,'強']];
   const cupOpts=[];for(let i=0;i<=cups;i++)cupOpts.push([i,i]);
   $('form').innerHTML=`
-  <section class="panel">
+  <fieldset class="fs" ${s.done?'disabled':''}>
+  <section class="panel" style="margin-top:12px">
     <div><label class="f">サンプルコード</label><input data-t="code" value="${esc(s.code)}"></div>
-    <details class="ms beans" style="margin-top:12px" ${hasInfo?'open':''}>
+    <details class="ms beans" style="margin-top:12px" ${S.infoOpen?'open':''}>
       <summary><span class="bs-t">豆の情報</span><span class="bs-s">${hasInfo?esc(shortInfo(s)):'産地・品種・精製など（販売ページの文章から読み取れます）'}</span><span class="bs-a"></span></summary>
       <label class="f" for="pasteBox" style="margin-top:10px">販売ページなどの文章を貼り付けると、項目を読み取って下に入力します</label>
-      <textarea id="pasteBox" placeholder="例：\n生産国：エチオピア\n地域：グジ\n品種：ヘアルーム\n精製方法：ナチュラル\n標高：2,100m"></textarea>
+      <textarea id="pasteBox" placeholder="例：&#10;生産国：エチオピア&#10;地域：グジ&#10;品種：ヘアルーム&#10;精製方法：ナチュラル&#10;標高：2,100m"></textarea>
       <div class="actions" style="align-items:center"><button class="btn" type="button" id="parseBtn">文章から読み取る</button><span class="hint" id="parseMsg"></span></div>
       <div class="grid2" style="margin-top:10px">
         ${INFO.map(x=>`<div><label class="f">${x.ja}</label><input data-i="${x.k}" value="${esc(info[x.k]||'')}"></div>`).join('')}
@@ -358,22 +444,23 @@ function renderForm(){
     </div>
   </section>
 
-  <h2>採点項目（各0〜8点、0.5刻み）</h2>
+  <h2>採点項目 <small>各0〜8点、0.5刻み。未入力のままでも省略できます</small></h2>
   <section class="panel">
-    ${ATTRS.map(x=>`
-    <div class="attr">
+    ${ATTRS.map(x=>{const v=s.attrs[x.k],set=isSet(v);return `
+    <div class="attr${set?'':' unset'}" data-row="${x.k}">
       <div class="attr-head"><span class="attr-name">${x.ja}</span><span class="attr-en">${x.en}</span>
-        <span class="attr-val num" id="v-${x.k}">${f1(s.attrs[x.k])}</span></div>
+        <button class="skip" type="button" data-skip="${x.k}" ${set?'':'hidden'}>省略にする</button>
+        <span class="attr-val num" id="v-${x.k}">${set?f1(v):'—'}</span></div>
       <div class="hint">${x.h}</div>
       <div class="attr-ctl">
         <button class="step" type="button" data-step="-0.5" data-k="${x.k}" aria-label="${x.ja}を0.5下げる">−</button>
-        <input type="range" min="0" max="8" step="0.5" value="${s.attrs[x.k]}" data-a="${x.k}" aria-label="${x.ja}">
+        <input type="range" min="0" max="8" step="0.5" value="${set?v:6}" data-a="${x.k}" aria-label="${x.ja}">
         <button class="step" type="button" data-step="0.5" data-k="${x.k}" aria-label="${x.ja}を0.5上げる">＋</button>
       </div>
       <div class="scale"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span></div>
       ${x.int?`<div class="intensity">強度（採点外）${seg(x.int,[['L','低'],['M','中'],['H','高']],s[x.int])}</div>`:''}
       <input class="note" data-n="${x.k}" value="${esc(s.notes[x.k]||'')}" placeholder="メモ">
-    </div>`).join('')}
+    </div>`}).join('')}
   </section>
 
   <h2>欠点（減点）</h2>
@@ -383,42 +470,82 @@ function renderForm(){
       <div><label class="f">強度</label>${seg('defI',lvl,s.defI)}</div>
     </div>
     <div style="margin-top:12px"><label class="f">欠点のあるカップ数（全${cups}カップ中）</label>${seg('defCups',cupOpts,s.defCups)}</div>
-    <div class="defcalc">カップ数 ${s.defCups} × 強度 ${s.defI} × 4 ＝ <span class="num" id="defOut">−${defect(s)}</span></div>
+    <div class="defcalc" id="defcalc"></div>
   </section>
 
   <h2>総評</h2>
   <section class="panel">
     <textarea data-t="memo" placeholder="全体の印象、温度変化による違い、他サンプルとの比較など">${esc(s.memo)}</textarea>
-    <div class="actions"><button class="btn danger" id="delSample">このサンプルを削除</button></div>
+    <div class="actions"><button class="btn danger" type="button" id="delSample">このサンプルを削除</button></div>
+  </section>
+  </fieldset>
+
+  <section class="finish">
+  ${s.done?`
+    <div class="panel donebox">
+      <b>✓ このサンプルは採点完了</b>${s.doneAt!=null?`<span class="hint">（${mmss(s.doneAt)}に完了）</span>`:''}
+      <div class="actions">
+        <button class="btn" type="button" id="reopen">編集を再開</button>
+        <button class="btn primary" type="button" id="nextBtn">次のサンプルへ ▶</button>
+      </div>
+    </div>`:`
+    <div class="actions">
+      <button class="btn ok" type="button" id="doneBtn">✓ このサンプルを完了</button>
+      <button class="btn primary" type="button" id="doneNext">完了して次へ ▶</button>
+    </div>
+    <p class="hint">40分を待たずに完了できます。完了後も「編集を再開」で修正できます。</p>`}
   </section>`;
+  updateDefcalc();
+}
+function updateDefcalc(){const s=cur(),el=$('defcalc');if(el)el.innerHTML=`カップ数 ${s.defCups} × 強度 ${s.defI} × 4 ＝ <span class="num">−${defect(s)}</span>`}
+function setAttr(k,v){
+  const s=cur();s.attrs[k]=v;const set=isSet(v);
+  const row=document.querySelector(`[data-row="${k}"]`);
+  if(row){row.classList.toggle('unset',!set);row.querySelector('[data-skip]').hidden=!set;
+    $('v-'+k).textContent=set?f1(v):'—';row.querySelector('[data-a]').value=set?v:6}
+  updateTotals();save();
 }
 const form=$('form');
 form.addEventListener('input',e=>{
   const el=e.target,s=cur();
-  if(el.dataset.a){s.attrs[el.dataset.a]=+el.value;$('v-'+el.dataset.a).textContent=f1(el.value)}
-  else if(el.dataset.t){s[el.dataset.t]=el.value;if(el.dataset.t==='code'){renderTabs();renderSummary()}}
+  if(el.dataset.a){setAttr(el.dataset.a,+el.value);return}
+  if(el.dataset.t){s[el.dataset.t]=el.value;if(el.dataset.t==='code'){renderTabs();updateTotals()}}
   else if(el.dataset.i){(s.info||(s.info={}))[el.dataset.i]=el.value;renderSummary()}
   else if(el.dataset.n){s.notes[el.dataset.n]=el.value}
-  updateTotals();save();
+  save();
 });
+form.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('beans')){S.infoOpen=e.target.open;save()}},true);
 let armDel=null;
 form.addEventListener('click',e=>{
-  const s=cur(),st=e.target.closest('[data-step]'),sg=e.target.closest('[data-f]');
-  if(st){const k=st.dataset.k;s.attrs[k]=Math.min(8,Math.max(0,s.attrs[k]+Number(st.dataset.step)));
-    form.querySelector(`[data-a="${k}"]`).value=s.attrs[k];$('v-'+k).textContent=f1(s.attrs[k]);updateTotals();save();return}
+  const s=cur(),tg=e.target;
+  if(tg.matches&&tg.matches('input[type=range]')){const k=tg.dataset.a;if(!isSet(s.attrs[k]))setAttr(k,+tg.value);return}
+  const st=tg.closest('[data-step]');
+  if(st){const k=st.dataset.k,v=s.attrs[k];setAttr(k,isSet(v)?Math.min(8,Math.max(0,Number(v)+Number(st.dataset.step))):6);return}
+  const sk=tg.closest('[data-skip]');
+  if(sk){setAttr(sk.dataset.skip,null);return}
+  const sg=tg.closest('[data-f]');
   if(sg){const f=sg.dataset.f,v=sg.dataset.v;s[f]=isNaN(+v)?v:+v;
     sg.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===sg));
-    if(f==='defCups'||f==='defI'){form.querySelector('.defcalc').innerHTML=`カップ数 ${s.defCups} × 強度 ${s.defI} × 4 ＝ <span class="num" id="defOut">−${defect(s)}</span>`;updateTotals()}
+    if(f==='defCups'||f==='defI'){updateDefcalc();updateTotals()}
     save();return}
-  if(e.target.id==='parseBtn'){
+  const id=tg.closest('button')&&tg.closest('button').id;
+  if(id==='parseBtn'){
     const txt=$('pasteBox').value;
     if(!txt.trim()){$('parseMsg').textContent='先に文章を貼り付けてください';return}
     const got=parseInfo(txt),keys=Object.keys(got);
-    s.info=Object.assign(s.info||{},got);save();renderForm();renderSummary();
+    s.info=Object.assign(s.info||{},got);S.infoOpen=true;save();renderForm();renderSummary();
     const miss=INFO.filter(x=>!s.info[x.k]).map(x=>x.ja);
     $('parseMsg').textContent=keys.length?`${keys.length}項目を読み取りました。内容を確認してください`+(miss.length?`（空欄：${miss.join('、')}）`:''):'項目を見つけられませんでした。手入力してください';
     return}
-  if(e.target.id==='delSample'){const b=e.target;
+  if(id==='doneBtn'||id==='doneNext'){
+    s.done=true;s.doneAt=(S.timer.run||S.timer.acc>0)?elapsed():null;save();
+    if(id==='doneNext'){const n=nextIncomplete();
+      if(n>=0){go(n);return}
+      renderAll();toast('全サンプルの採点が完了しました',1600);$('sumTable').scrollIntoView({behavior:'smooth',block:'start'});return}
+    renderAll();toast('✓ '+s.code+' 完了');return}
+  if(id==='reopen'){s.done=false;s.doneAt=null;save();renderAll();return}
+  if(id==='nextBtn'){const n=nextIncomplete();go(n>=0?n:Math.min(S.cur+1,S.samples.length-1));return}
+  if(id==='delSample'){const b=tg.closest('button');
     if(S.samples.length<2){b.textContent='サンプルが1つのため削除できません';return}
     if(armDel!==b){armDel=b;b.textContent='もう一度押すと削除';b.classList.add('arm');setTimeout(()=>{if(armDel===b){armDel=null;b.textContent='このサンプルを削除';b.classList.remove('arm')}},3000);return}
     armDel=null;S.samples.splice(S.cur,1);S.cur=Math.max(0,S.cur-1);save();renderAll()}
@@ -426,43 +553,39 @@ form.addEventListener('click',e=>{
 
 /* ---------- totals & summary ---------- */
 function updateTotals(){
-  const s=cur(),t=total(s),[tl,tc]=tier(t);
-  $('tbCode').textContent=s.code||'—';
-  $('tbSub').textContent=s.defCups?`欠点 −${defect(s)}`:'欠点なし';
-  $('tbScore').textContent=f1(t);
+  const s=cur(),r=score(s),[tl,tc]=tier(r);
+  $('tbCode').textContent=(s.done?'✓ ':'')+(s.code||'—');
+  $('tbSub').textContent=(s.done?'完了':'採点中')+'・'+(s.defCups?`欠点 −${defect(s)}`:'欠点なし');
+  $('tbScore').textContent=r.t===null?'—':f1(r.t);
   $('tbTier').textContent=tl;$('tbTier').className='tb-tier '+tc;
-  const tab=$('tabs').querySelector(`[data-tab="${S.cur}"] small`);if(tab)tab.textContent=f1(t);
+  const tab=$('tabs').querySelector(`[data-tab="${S.cur}"] small`);if(tab)tab.textContent=fs(r);
   renderSummary();
 }
+function ranked(){return S.samples.map((s,i)=>({s,i,r:score(s)})).sort((a,b)=>(b.r.t===null?-1e9:b.r.t)-(a.r.t===null?-1e9:a.r.t))}
 function renderSummary(){
-  const rows=S.samples.map((s,i)=>({s,i,t:total(s)})).sort((a,b)=>b.t-a.t);
-  $('sumTable').innerHTML=`<thead><tr><th>順位</th><th style="text-align:left">サンプル</th><th style="text-align:left">豆</th>${ATTRS.map(x=>`<th title="${x.ja}">${x.en.split(' ')[0]}</th>`).join('')}<th>欠点</th><th>合計</th></tr></thead><tbody>`+
-  rows.map((r,n)=>`<tr class="${n===0?'rank1':''}"><td>${n+1}</td><td class="code">${esc(r.s.code)}</td><td style="text-align:left">${esc(shortInfo(r.s))}</td>${ATTRS.map(x=>`<td class="num">${f1(r.s.attrs[x.k])}</td>`).join('')}<td class="num">${defect(r.s)?'−'+defect(r.s):'0'}</td><td class="tot num">${f1(r.t)}</td></tr>`).join('')+'</tbody>';
+  $('sumTable').innerHTML=`<thead><tr><th>順位</th><th>完了</th><th style="text-align:left">サンプル</th><th style="text-align:left">豆</th>${ATTRS.map(x=>`<th title="${x.ja}">${x.en.split(' ')[0]}</th>`).join('')}<th>欠点</th><th>合計</th></tr></thead><tbody>`+
+  ranked().map((o,n)=>`<tr class="${n===0&&o.r.t!==null?'rank1':''}"><td>${o.r.t===null?'—':n+1}</td><td class="ok">${o.s.done?'✓':''}</td><td class="code">${esc(o.s.code)}</td><td style="text-align:left">${esc(shortInfo(o.s))}</td>${ATTRS.map(x=>`<td class="num">${isSet(o.s.attrs[x.k])?f1(o.s.attrs[x.k]):'—'}</td>`).join('')}<td class="num">${defect(o.s)?'−'+defect(o.s):'0'}</td><td class="tot num">${fs(o.r)}</td></tr>`).join('')+'</tbody>';
 }
 function renderAll(){renderTabs();renderForm();updateTotals()}
 
-/* ---------- export / reset ---------- */
+/* ---------- export / share / reset ---------- */
 const L={1:'弱',2:'中',3:'強'},I={L:'低',M:'中',H:'高'},R={1:'極浅',2:'浅',3:'中浅',4:'中',5:'深'};
 function asText(){
   const ss=S.session;let o=`【COE式カッピング】${ss.name||''}\n日付：${ss.date||''}　カッパー：${ss.cupper||''}　カップ数：${ss.cups}\n`;
-  S.samples.map(s=>({s,t:total(s)})).sort((a,b)=>b.t-a.t).forEach(({s,t},n)=>{
-    o+=`\n${n+1}. ${s.code}　合計 ${f1(t)}\n`;
+  ranked().forEach(({s,r},n)=>{
+    o+=`\n${r.t===null?'－':n+1}. ${s.code}　合計 ${fs(r)}${r.miss&&r.t!==null?`（暫定：${r.miss}項目を平均で補完）`:''}${s.done?'　✓完了':''}\n`;
     const inf=INFO.filter(x=>(s.info||{})[x.k]).map(x=>`${x.ja}：${s.info[x.k]}`);if(s.origin)inf.unshift(s.origin);
     if(inf.length)o+=`  ${inf.join('　')}\n`;
     o+=`  ロースト：${R[s.roast]}　アロマ ドライ${L[s.dry]}／クラスト${L[s.crust]}／ブレイク${L[s.brk]}${s.aroma?'　'+s.aroma:''}\n`;
-    ATTRS.forEach(x=>{o+=`  ${x.ja}：${f1(s.attrs[x.k])}${x.int?'（強度'+I[s[x.int]]+'）':''}${s.notes[x.k]?'　'+s.notes[x.k]:''}\n`});
+    ATTRS.forEach(x=>{const v=s.attrs[x.k];o+=`  ${x.ja}：${isSet(v)?f1(v):'省略'}${x.int?'（強度'+I[s[x.int]]+'）':''}${s.notes[x.k]?'　'+s.notes[x.k]:''}\n`});
     o+=`  欠点：${s.defCups?`${s.defType==='fault'?'フォルト':'テイント'} ${s.defCups}×${s.defI}×4＝−${defect(s)}`:'なし'}\n`;
     if(s.memo)o+=`  総評：${s.memo}\n`;
   });return o;
 }
-$('copyBtn').addEventListener('click',async()=>{
-  const txt=asText(),box=$('copybox'),b=$('copyBtn');
-  try{await navigator.clipboard.writeText(txt);b.textContent='コピーしました';setTimeout(()=>b.textContent='結果をテキストでコピー',2000)}
-  catch(e){box.style.display='block';box.value=txt;box.focus();box.select();b.textContent='下の欄から手動でコピーしてください'}
-});
 async function copyText(txt,b,label){const box=$('copybox');
   try{await navigator.clipboard.writeText(txt);b.textContent='コピーしました';setTimeout(()=>b.textContent=label,2000)}
   catch(e){box.style.display='block';box.value=txt;box.focus();box.select();b.textContent='下の欄から手動でコピーしてください'}}
+$('copyBtn').addEventListener('click',e=>copyText(asText(),e.currentTarget,'結果をテキストでコピー'));
 $('shareBtn').addEventListener('click',e=>{
   const d={session:S.session,samples:S.samples};
   const b64=btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -470,8 +593,8 @@ $('shareBtn').addEventListener('click',e=>{
 });
 $('csvBtn').addEventListener('click',()=>{
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const head=['順位','サンプル',...INFO.map(x=>x.ja),'ロースト',...ATTRS.map(x=>x.ja),'酸の強度','マウスフィールの強度','欠点','合計','総評'];
-  const rows=S.samples.map(s=>({s,t:total(s)})).sort((a,b)=>b.t-a.t).map(({s,t},n)=>[n+1,s.code,...INFO.map(x=>(s.info||{})[x.k]||''),R[s.roast],...ATTRS.map(x=>f1(s.attrs[x.k])),I[s.acidI],I[s.mouthI],-defect(s),f1(t),s.memo]);
+  const head=['順位','完了','サンプル',...INFO.map(x=>x.ja),'ロースト',...ATTRS.map(x=>x.ja),'酸の強度','マウスフィールの強度','欠点','合計','補完した項目数','総評'];
+  const rows=ranked().map(({s,r},n)=>[r.t===null?'':n+1,s.done?'完了':'',s.code,...INFO.map(x=>(s.info||{})[x.k]||''),R[s.roast],...ATTRS.map(x=>isSet(s.attrs[x.k])?f1(s.attrs[x.k]):''),I[s.acidI],I[s.mouthI],-defect(s),r.t===null?'':f1(r.t),r.t===null?'':r.miss,s.memo]);
   const csv='\ufeff'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download=`cupping_${S.session.date||'result'}.csv`;document.body.appendChild(a);a.click();a.remove();
@@ -492,39 +615,50 @@ function beep(n){if(!S.sound)return;try{actx=actx||new (window.AudioContext||win
   for(let i=0;i<n;i++){const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);
     const t=actx.currentTime+i*.28;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.start(t);o.stop(t+.22)}}catch(e){}
   try{navigator.vibrate&&navigator.vibrate(n>1?[200,100,200]:200)}catch(e){}}
-function elapsed(){const t=S.timer;return Math.floor((t.acc+(t.run?Date.now()-t.start:0))/1000)}
-const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function elapsed(){const t=S.timer;return Math.max(0,Math.floor((t.acc+(t.run?Date.now()-t.start:0))/1000))}
+function mmss(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function started(){return S.timer.run||S.timer.acc>0}
 function renderMS(sec){
   let nowI=-1;MS.forEach((m,i)=>{if(sec>=m.t)nowI=i});
-  const started=S.timer.run||S.timer.acc>0;
-  $('msList').innerHTML=MS.map((m,i)=>`<li class="${started&&i<nowI?'done':''}${started&&i===nowI?' now':''}"><span class="t num">${mmss(m.t)}</span><div><div class="l">${m.l}</div><div class="d">${m.d}</div></div></li>`).join('');
-  return nowI;
+  const st=started();
+  $('msList').innerHTML=MS.map((m,i)=>`<li class="${st&&i<nowI?'done':''}${st&&i===nowI?' now':''}"><span class="t num">${mmss(m.t)}</span><div><div class="l">${m.l}</div><div class="d">${m.d}</div></div></li>`).join('');
 }
 let lastNow=-2;
 function tick(){
-  const sec=elapsed(),t=S.timer,started=t.run||t.acc>0;
+  const sec=elapsed(),t=S.timer,st=started();
   $('clock').textContent=mmss(sec);$('clock').classList.toggle('over',sec>=LIMIT);
   $('barFill').style.width=Math.min(100,sec/LIMIT*100)+'%';
   let nowI=-1;MS.forEach((m,i)=>{if(sec>=m.t)nowI=i});
   if(t.run){MS.forEach((m,i)=>{if(m.t>0&&sec>=m.t&&!t.fired.includes(i)){t.fired.push(i);save();if(sec-m.t<5)beep(i===MS.length-1?3:2)}})}
-  if(!started){$('phaseNow').innerHTML='注湯前：<b>ドライアロマを評価</b>';$('phaseNext').textContent=''}
+  if(!st){$('phaseNow').innerHTML='注湯前：<b>ドライアロマを評価</b>';$('phaseNext').textContent=''}
   else if(sec>=LIMIT){$('phaseNow').innerHTML='<b>40分経過</b>　延長して計測中';$('phaseNext').textContent=''}
   else{const nx=MS[nowI+1];$('phaseNow').innerHTML='<b>'+MS[nowI].l+'</b>';$('phaseNext').textContent=nx?`次：${nx.l}まで ${mmss(nx.t-sec)}`:''}
-  if(nowI!==lastNow||!started){lastNow=nowI;renderMS(sec)}
+  const key=st?nowI:-3;
+  if(key!==lastNow){lastNow=key;renderMS(sec)}
 }
+function shift(d){
+  const t=S.timer,c=elapsed(),ns=Math.max(0,c+d);
+  t.acc+=(ns-c)*1000;
+  t.fired=MS.map((m,i)=>i).filter(i=>MS[i].t>0&&MS[i].t<=ns);
+  save();tick();
+}
+document.querySelectorAll('[data-ff]').forEach(b=>b.addEventListener('click',()=>shift(+b.dataset.ff)));
+$('ffNext').addEventListener('click',()=>{const c=elapsed(),m=MS.find(m=>m.t>c);if(m){shift(m.t-c);toast(m.l,1000)}});
 $('tStart').addEventListener('click',()=>{const t=S.timer;
   if(t.run){t.acc+=Date.now()-t.start;t.run=false}
   else{t.start=Date.now();t.run=true;if(!actx&&S.sound){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}}
   syncTimerBtn();save();tick()});
-$('tReset').addEventListener('click',()=>{S.timer={start:0,acc:0,run:false,fired:[]};lastNow=-2;syncTimerBtn();save();tick()});
+$('tReset').addEventListener('click',()=>{S.timer={start:0,acc:0,run:false,fired:[]};syncTimerBtn();save();tick()});
 function syncTimerBtn(){const t=S.timer;$('tStart').textContent=t.run?'一時停止':(t.acc>0?'再開':'注湯スタート');$('tStart').classList.toggle('go',!t.run)}
 function syncSound(){$('soundBtn').textContent=S.sound?'通知音：オン':'通知音：オフ'}
 $('soundBtn').addEventListener('click',()=>{S.sound=!S.sound;syncSound();save()});
+function setHdr(){document.documentElement.style.setProperty('--hdr',$('hdr').offsetHeight+'px')}
+try{new ResizeObserver(setHdr).observe($('hdr'))}catch(e){window.addEventListener('resize',setHdr)}
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 if(shared){$('sharedBanner').hidden=false;save()}
-syncTimerBtn();syncSound();renderAll();tick();setInterval(tick,250);
+setHdr();syncTimerBtn();syncSound();renderAll();tick();setInterval(tick,250);
 document.addEventListener('visibilitychange',tick);
 })();
 </script>
